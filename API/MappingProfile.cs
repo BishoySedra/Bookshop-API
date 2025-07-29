@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Models.Entities;
 using API.DTOs.Category;
-//using API.DTOs.Product;
+using API.DTOs.Product;
 
 public class MappingProfile : Profile
 {
@@ -13,8 +13,8 @@ public class MappingProfile : Profile
         CreateMap<CategoryUpdateDTO, Category>().ReverseMap();
 
         //// Product mappings
-        //CreateMap<Product, ProductReadDTO>();
-        //CreateMap<ProductCreateDTO, Product>();
-        //CreateMap<ProductUpdateDTO, Product>().ReverseMap();
+        CreateMap<Product, ProductReadDTO>();
+        CreateMap<ProductCreateDTO, Product>();
+        CreateMap<ProductUpdateDTO, Product>().ReverseMap();
     }
 }
