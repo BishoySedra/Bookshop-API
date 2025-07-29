@@ -16,7 +16,7 @@ namespace DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Here I can configure the model using Fluent API if needed from another assembly called Models.Configurations
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(mainContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Category).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }

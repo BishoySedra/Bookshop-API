@@ -26,6 +26,11 @@ namespace DataAccess.Configurations
 
             builder.Property(c => c.markedAsDeleted)
                 .HasColumnName("isDeleted");
+
+            // Indexing on catName
+            builder.HasIndex(c => c.catName)
+                .IsUnique()
+                .HasDatabaseName("IX_Categories_catName");
         }
     }
 }
