@@ -14,6 +14,9 @@ builder.Services.AddDbContext<mainContext>(options =>
 // Adding repositories to the container.
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Adding autoMapper to the container.
+builder.Services.AddAutoMapper(typeof(Program));
+
 // Adding services to the container.
 builder.Services.AddControllers();
 
