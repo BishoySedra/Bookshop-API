@@ -22,16 +22,16 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/Product
+        /// <summary>
+        /// Retrieves all products with their associated categories.
+        /// </summary>
+        /// <returns>A list of products with category names.</returns>
         [HttpGet]
-        //[MapToApiVersion("1.0")]
         [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, NoStore = false)]
         public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAll()
         {
-            // Fetch all products with their categories
             var products = await _unitOfWork.Products.FindAsync(p => true);
 
-            // Include Category manually
             var result = products.Select(p => new ProductReadDTO
             {
                 Id = p.Id,
@@ -43,26 +43,26 @@ namespace API.Controllers
                 CategoryName = p.Category?.catName
             });
 
-            // Return the list of products
             return Ok(result);
         }
 
-        // GET: api/Product/5
+        /// <summary>
+        /// Retrieves a product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product.</param>
+        /// <returns>A single product with its details and category.</returns>
         [HttpGet("{id}")]
         [ResponseCache(CacheProfileName = "Default60")]
         public async Task<ActionResult<ProductReadDTO>> GetById(int id)
         {
-            // Fetch product by id with its category
             var product = await _unitOfWork.Products.FindAsync(p => p.Id == id);
-
-            // If no product is found, return NotFound
             var p = product.FirstOrDefault();
 
-            if (p == null) { 
+            if (p == null)
+            {
                 return NotFound();
             }
 
-            // Map the product to ProductReadDTO
             var result = new ProductReadDTO
             {
                 Id = p.Id,
@@ -77,78 +77,75 @@ namespace API.Controllers
             return Ok(result);
         }
 
-        // POST: api/Product
+        /// <summary>
+        /// Creates a new product.
+        /// </summary>
+        /// <param name="dto">The product data to create.</param>
+        /// <returns>The newly created product with a 201 response.</returns>
         [HttpPost]
         [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<ActionResult<ProductReadDTO>> Create(ProductCreateDTO dto)
         {
-            // Check if the model state is valid to ensure all required fields are provided
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
-            };
+            }
 
-            // Map the DTO to the Product entity
             var product = _mapper.Map<Product>(dto);
-
-            // Add the product to the database
             await _unitOfWork.Products.AddAsync(product);
-
-            // Save changes to the database
             await _unitOfWork.CompleteAsync();
 
-            // Map the created product back to ProductReadDTO for the response
             var result = _mapper.Map<ProductReadDTO>(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, result);
         }
 
-        // PUT: api/Product/5
+        /// <summary>
+        /// Updates an existing product.
+        /// </summary>
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="dto">The updated product data.</param>
+        /// <returns>NoContent if the update is successful; NotFound if the product doesn't exist.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ProductUpdateDTO dto)
         {
-            // Check if the model state is valid to ensure all required fields are provided
-            if (!ModelState.IsValid) { 
+            if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
             }
 
-            // Check if the product exists
             var existingProduct = await _unitOfWork.Products.GetByIdAsync(id);
-
-            // If the product does not exist, return NotFound
-            if (existingProduct == null) { 
+            if (existingProduct == null)
+            {
                 return NotFound();
             }
 
-            // Map the DTO to the existing product entity
             _mapper.Map(dto, existingProduct);
-
-            // Update the product in the database
             _unitOfWork.Products.Update(existingProduct);
-
-            // Save changes to the database
             await _unitOfWork.CompleteAsync();
 
-            // Return NoContent to indicate the update was successful
             return NoContent();
         }
 
-        // PATCH: api/Product/5
+        /// <summary>
+        /// Partially updates a product using a JSON Patch document.
+        /// </summary>
+        /// <param name="id">The ID of the product to patch.</param>
+        /// <param name="patchDoc">The patch document containing operations to perform.</param>
+        /// <returns>NoContent if the patch is applied; NotFound or BadRequest otherwise.</returns>
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchProduct(int id, [FromBody] JsonPatchDocument<ProductPatchDTO> patchDoc)
         {
-            // Check if the patch document is null
             if (patchDoc == null)
             {
                 return BadRequest("Invalid patch document.");
             }
 
-            // Check if the product exists
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            // Create a DTO to hold the patchable fields
             var patchDTO = new ProductPatchDTO
             {
                 Title = product.Title,
@@ -158,35 +155,38 @@ namespace API.Controllers
                 CategoryId = product.CategoryId
             };
 
-            // Apply the patch document to the DTO
             patchDoc.ApplyTo(patchDTO, ModelState);
 
-            // Check if the model state is valid after applying the patch
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Map updated fields back to the entity
             product.Title = patchDTO.Title;
             product.Description = patchDTO.Description;
             product.Author = patchDTO.Author;
             product.Price = patchDTO.Price;
             product.CategoryId = patchDTO.CategoryId;
 
-            // Update the product in the database
             _unitOfWork.Products.Update(product);
             await _unitOfWork.CompleteAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/Product/5
+        /// <summary>
+        /// Deletes a product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>NoContent if deletion is successful; NotFound if the product does not exist.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var existingProduct = await _unitOfWork.Products.GetByIdAsync(id);
-            if (existingProduct == null) return NotFound();
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
 
             _unitOfWork.Products.Delete(existingProduct);
             await _unitOfWork.CompleteAsync();
