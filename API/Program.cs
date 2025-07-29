@@ -1,4 +1,6 @@
+using Core.Interfaces;
 using DataAccess;
+using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Adding mainContext to the container.
 builder.Services.AddDbContext<mainContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Adding repositories to the container.
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Adding services to the container.
 builder.Services.AddControllers();
