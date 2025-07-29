@@ -25,7 +25,7 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<CategoryReadDTO>>> GetAll()
         {
             // This method retrieves all categories from the database and maps them to DTOs.
-            var categories = await _unitOfWork.Categories.GetAllAsync();
+            var categories = await _unitOfWork.Categories.GetAllOrderedAsync();
 
             // result is a collection of CategoryReadDTO objects
             var result = _mapper.Map<IEnumerable<CategoryReadDTO>>(categories);

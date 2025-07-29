@@ -7,6 +7,7 @@ namespace Core.Interfaces
     {
         // Add custom Category-specific methods here if needed
         Task<IEnumerable<Category>> GetPagedCategoriesAsync(PaginationParams paginationParams);
+        Task<IEnumerable<Category>> GetAllOrderedAsync();
 
     }
 }
