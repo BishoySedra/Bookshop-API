@@ -38,6 +38,9 @@ builder.Services.AddControllers(options =>
 // Adding caching services to the container.
 builder.Services.AddResponseCaching(); // Inside builder.Services
 
+// Adding memory cache services to the container.
+builder.Services.AddMemoryCache();
+
 // Adding Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

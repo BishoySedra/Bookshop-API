@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DataAccess.Seed;
+using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 
 namespace DataAccess
@@ -19,6 +20,9 @@ namespace DataAccess
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(Category).Assembly);
 
             base.OnModelCreating(modelBuilder);
+
+            // Add this line
+            SeedData.Seed(modelBuilder);
         }
     }
 }

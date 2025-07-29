@@ -4,6 +4,7 @@ using Models.Entities;
 using API.DTOs.Category;
 using AutoMapper;
 using Core.Params;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace API.Controllers
 {
@@ -13,22 +14,38 @@ namespace API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _memoryCache;
 
-        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper, IMemoryCache memoryCache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _memoryCache = memoryCache;
         }
 
         // GET: api/Category
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryReadDTO>>> GetAll()
         {
+            string cacheKey = "allCategories";
+
+            if(_memoryCache.TryGetValue(cacheKey, out IEnumerable<CategoryReadDTO> cachedCategories))
+            {
+                // If categories are found in cache, return them directly with a 200 OK status.
+                Console.WriteLine("Returning cached categories.");
+                return Ok(cachedCategories);
+            }
+
             // This method retrieves all categories from the database and maps them to DTOs.
             var categories = await _unitOfWork.Categories.GetAllOrderedAsync();
 
             // result is a collection of CategoryReadDTO objects
             var result = _mapper.Map<IEnumerable<CategoryReadDTO>>(categories);
+
+            // Set cache options for the categories.
+            var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(1));
+
+            _memoryCache.Set(cacheKey, result, cacheEntryOptions);
 
             // If no categories are found, return an empty list with a 200 OK status.
             return Ok(result);
@@ -38,8 +55,22 @@ namespace API.Controllers
         [HttpGet("paged")]
         public async Task<IActionResult> GetPagedCategories([FromQuery] PaginationParams paginationParams)
         {
+            string cacheKey = $"pagedCategories_{paginationParams.PageNumber}_{paginationParams.PageSize}";
+            if (_memoryCache.TryGetValue(cacheKey, out IEnumerable<CategoryReadDTO> cachedCategories))
+            {
+                // If paged categories are found in cache, return them directly with a 200 OK status.
+                Console.WriteLine("Returning cached paged categories.");
+                return Ok(cachedCategories);
+            }
+
             var categories = await _unitOfWork.Categories.GetPagedCategoriesAsync(paginationParams);
             var categoryDTOs = _mapper.Map<IEnumerable<CategoryReadDTO>>(categories);
+
+            // Set cache options for the paged categories.
+            var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(1));
+
+            _memoryCache.Set(cacheKey, categoryDTOs, cacheEntryOptions);
+
             return Ok(categoryDTOs);
         }
 
