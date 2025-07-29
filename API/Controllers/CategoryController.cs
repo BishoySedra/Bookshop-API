@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Models.Entities;
 using API.DTOs.Category;
 using AutoMapper;
+using Core.Params;
 
 namespace API.Controllers
 {
@@ -32,6 +33,16 @@ namespace API.Controllers
             // If no categories are found, return an empty list with a 200 OK status.
             return Ok(result);
         }
+
+        // GET: api/Category/paged
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPagedCategories([FromQuery] PaginationParams paginationParams)
+        {
+            var categories = await _unitOfWork.Categories.GetPagedCategoriesAsync(paginationParams);
+            var categoryDTOs = _mapper.Map<IEnumerable<CategoryReadDTO>>(categories);
+            return Ok(categoryDTOs);
+        }
+
 
         // GET: api/Category/{id}
         [HttpGet("{id}")]
