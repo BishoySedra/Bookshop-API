@@ -19,7 +19,21 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Adding services to the container.
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add("Default60", new CacheProfile
+    {
+        Duration = 60, // Cache duration in seconds
+        Location = ResponseCacheLocation.Client, // Cache location private or Any for public
+        NoStore = false
+    });
+
+    options.CacheProfiles.Add("NoCache", new CacheProfile
+    {
+        NoStore = true,
+        Location = ResponseCacheLocation.None
+    });
+}).AddNewtonsoftJson();
 
 // Adding caching services to the container.
 builder.Services.AddResponseCaching(); // Inside builder.Services

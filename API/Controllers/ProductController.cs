@@ -49,6 +49,7 @@ namespace API.Controllers
 
         // GET: api/Product/5
         [HttpGet("{id}")]
+        [ResponseCache(CacheProfileName = "Default60")]
         public async Task<ActionResult<ProductReadDTO>> GetById(int id)
         {
             // Fetch product by id with its category
@@ -78,6 +79,7 @@ namespace API.Controllers
 
         // POST: api/Product
         [HttpPost]
+        [ResponseCache(CacheProfileName = "NoCache")]
         public async Task<ActionResult<ProductReadDTO>> Create(ProductCreateDTO dto)
         {
             // Check if the model state is valid to ensure all required fields are provided
