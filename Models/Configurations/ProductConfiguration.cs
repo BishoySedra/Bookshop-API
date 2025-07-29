@@ -31,7 +31,8 @@ namespace DataAccess.Configurations
             // Price: Required, ColumnName = BookPrice
             builder.Property(p => p.Price)
                    .IsRequired()
-                   .HasColumnName("BookPrice");
+                   .HasColumnName("BookPrice")
+                   .HasColumnType("decimal(10,2)"); // making 10 digits total, 2 after decimal point
 
             // Validation for price range (1-1000) – done in application-level validation, not DB
 

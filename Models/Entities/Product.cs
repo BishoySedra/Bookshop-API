@@ -10,7 +10,7 @@
 
         public string Author { get; set; }
 
-        public double Price { get; set; }
+        public decimal Price { get; set; }
 
         // Added this for the relationship for one-to-many with Category
         public int CategoryId { get; set; }
