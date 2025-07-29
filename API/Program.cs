@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Adding services to the container
+#region Middleware Setup
 
 // Adding mainContext to the container.
 builder.Services.AddDbContext<mainContext>(options =>
@@ -20,6 +20,9 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 // Adding services to the container.
 builder.Services.AddControllers().AddNewtonsoftJson();
+
+// Adding caching services to the container.
+builder.Services.AddResponseCaching(); // Inside builder.Services
 
 // Adding Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
@@ -39,6 +42,8 @@ builder.Services.AddApiVersioning(options =>
 #endregion
 
 
+#region Middleware pipeline
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,8 +55,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseResponseCaching(); // Enable response caching
+
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+#endregion

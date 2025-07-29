@@ -24,6 +24,8 @@ namespace API.Controllers
 
         // GET: api/Product
         [HttpGet]
+        //[MapToApiVersion("1.0")]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, NoStore = false)]
         public async Task<ActionResult<IEnumerable<ProductReadDTO>>> GetAll()
         {
             // Fetch all products with their categories
