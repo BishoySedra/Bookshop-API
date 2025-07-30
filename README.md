@@ -20,6 +20,7 @@ Bookshop API is a RESTful web service built using ASP.NET Core 8 Web API. It pro
     - [Products](#products)
 - [Docker Setup](#docker-setup)
 - [Project Structure](#project-structure)
+- [Testing](#testing)
 
 ---
 
@@ -113,3 +114,11 @@ To run the project with Docker:
 - **Core**: Defines interfaces and shared parameters.
 - **DataAccess**: Implements repositories, migrations, and database context.
 - **Models**: Contains entity definitions and configurations.
+
+## Testing
+
+Unit tests for the API are located in the API.Tests project. To run the tests, use the following command:
+
+```bash
+dotnet test
+```
